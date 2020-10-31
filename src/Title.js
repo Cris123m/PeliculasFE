@@ -10,6 +10,17 @@ export default function Title(props) {
   );
 }
 
+export function Subtitle(props) {
+  return (
+    <Typography component="h2" variant="h8" color="secundary" gutterBottom>
+      {props.children}
+    </Typography>
+  );
+}
+
 Title.propTypes = {
+  children: PropTypes.node,
+};
+Subtitle.propTypes = {
   children: PropTypes.node,
 };

@@ -18,35 +18,17 @@ import {
 import Title from '../Title';
 import { map } from 'lodash';
 
-function actorSelected(props) {
-  const { movie, actors } = props;
-  var actorSel = [];
-  if (movie) {
-    actors.forEach((actor) => {
-      movie.actors.forEach((act) => {
-        if (actor.id === act.id) {
-          actorSel.push(actor);
-          console.log('ActorSel');
-          console.log(actorSel);
-        }
-      });
-    });
-  }
-  return actorSel;
-}
-
-export function ModalMovie(props) {
-  const { movie, actors, genres } = props;
+export function ModalNewMovie(props) {
+  const { actors, genres } = props;
   const classes = useStyles();
   const theme = useTheme();
 
   const [open, setOpen] = React.useState(false);
-  const [personName, setPersonName] = useState(actorSelected(props));
-  const [stateGenre, setStateGenre] = useState({
-    genre: movie.genre.id,
-  });
+  const [personName, setPersonName] = useState([]);
+  const [stateGenre, setStateGenre] = useState({});
 
   const handleOpen = () => {
+    setPersonName([]);
     setOpen(true);
   };
 
@@ -68,8 +50,13 @@ export function ModalMovie(props) {
 
   return (
     <>
-      <Button type="button" color="secondary" onClick={handleOpen}>
-        Editar
+      <Button
+        type="button"
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}
+      >
+        Nueva Película
       </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -85,13 +72,12 @@ export function ModalMovie(props) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <Title>Editar Película</Title>
+            <Title>Nueva Película</Title>
             <form className={classes.root} noValidate autoComplete="off">
               <TextField
                 required
                 id="standard-required"
                 label="Nombre"
-                defaultValue={movie.name}
                 variant="outlined"
                 fullWidth
               />
@@ -99,7 +85,6 @@ export function ModalMovie(props) {
                 id="standard-number"
                 label="Duración (minutos)"
                 type="number"
-                defaultValue={movie.duration}
                 variant="outlined"
                 fullWidth
                 InputLabelProps={{
@@ -135,7 +120,6 @@ export function ModalMovie(props) {
                 label="Sinopsis"
                 multiline
                 rows={4}
-                defaultValue={movie.synopsis}
                 variant="outlined"
                 fullWidth
               />
