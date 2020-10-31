@@ -15,7 +15,7 @@ import { getActors } from '../api/actors';
 import { getGenres } from '../api/genres';
 import { map } from 'lodash';
 import { ModalMovie } from '../components/ModalMovie';
-import { ModalNewMovie } from '../components/ModalNewMovie';
+import { ModalNewActor } from '../components/ModalNewActor';
 import { ModalVerInfo } from '../components/ModalVerInfo';
 
 function preventDefault(event) {
@@ -64,7 +64,7 @@ export default function Actors(props) {
             <Title>Lista de actores</Title>
           </Grid>
           <Grid item xs={12} md={4} lg={3}>
-            <ModalNewMovie genres={genres} actors={actors} />
+            <ModalNewActor />
           </Grid>
         </Grid>
       </Container>
