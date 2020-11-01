@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -17,33 +17,50 @@ import {
 } from '@material-ui/core';
 import Title from '../Title';
 import FileUpload from './FileUpload';
-import { map } from 'lodash';
-import firebase from 'firebase/app';
 import 'firebase/storage';
-import { createActor } from '../api/actors';
+import { createActor, editActor } from '../api/actors';
 
-firebase.initializeApp({
-  apiKey: 'AIzaSyDmtraQk6rXhD6_yoWbuCgPNg_ruCRaWc0',
-  authDomain: 'peliculas-294019.firebaseapp.com',
-  databaseURL: 'https://peliculas-294019.firebaseio.com',
-  projectId: 'peliculas-294019',
-  storageBucket: 'peliculas-294019.appspot.com',
-  messagingSenderId: '617239861404',
-  appId: '1:617239861404:web:51bfc0f548e4a239cbf559',
-});
-
-export function ModalNewActor() {
+export function ModalNewActor(props) {
+  const { firebase, type, actor } = props;
   const classes = useStyles();
 
+  const [title, setTitle] = useState('');
+  const [typeButton, setTypeButton] = useState({});
   const [open, setOpen] = useState(false);
   const [names, setNames] = useState({});
   const [age, setAge] = useState({});
-  const [photoUrl, setPhotoUrl] = useState({});
-  const [percentage, setPercentage] = useState({});
-  const [photoURL, setPhotoURL] = useState({});
   const [form, setForm] = useState({
     uploadValue: 0,
+    photoURL: '',
+    names: '',
+    age: '',
   });
+  const [idActor, setIdActor] = useState('');
+
+  useEffect(() => {
+    if (type === 'create') {
+      setTitle('Nuevo Actor');
+      setTypeButton({
+        name: 'Nuevo Actor',
+        variant: 'contained',
+        color: 'primary',
+      });
+    } else if (type === 'edit') {
+      setTitle('Editar Actor');
+      setTypeButton({
+        name: 'Editar',
+        variant: '',
+        color: 'secundary',
+      });
+      setIdActor(actor.id);
+      setForm({
+        photoURL: actor.photoURL,
+        uploadValue: 100,
+        names: actor.names,
+        age: actor.age,
+      });
+    }
+  }, [type]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -64,10 +81,10 @@ export function ModalNewActor() {
         let percentage =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setForm({
+          photoURL: form.photoURL,
           uploadValue: percentage,
-        });
-        setPercentage({
-          percentage,
+          names: form.names,
+          age: form.age,
         });
       },
       (error) => {
@@ -82,9 +99,9 @@ export function ModalNewActor() {
           .then((url) => {
             setForm({
               photoURL: url,
-              uploadValue: 100,
-              names: names,
-              age: age,
+              uploadValue: form.uploadValue,
+              names: form.names,
+              age: form.age,
             });
           });
       },
@@ -94,47 +111,41 @@ export function ModalNewActor() {
   const handleChange = (e) => {
     console.log(`${e.target.name}: ${e.target.value}`);
     if (e.target.name === 'names') {
-      setNames(e.target.value);
+      setForm({
+        photoURL: form.photoURL,
+        uploadValue: form.uploadValue,
+        names: e.target.value,
+        age: form.age,
+      });
     }
     if (e.target.name === 'age') {
-      setAge(e.target.value);
+      setForm({
+        photoURL: form.photoURL,
+        uploadValue: form.uploadValue,
+        names: form.names,
+        age: e.target.value,
+      });
     }
-    setForm({
-      photoURL: form.photoURL,
-      uploadValue: form.uploadValue,
-      names: names,
-      age: age,
-    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    createActor(form);
-    /* try {
-      let config = {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      };
-      let res = await fetch('', config);
-      let json = await res.json();
-      console.log(json);
-    } catch (error) {} */
+    if (type === 'create') {
+      createActor(form);
+    } else if (type === 'edit') {
+      editActor(idActor, form);
+    }
   };
 
   return (
     <>
       <Button
         type="button"
-        variant="contained"
-        color="primary"
+        variant={typeButton.variant}
+        color={typeButton.color}
         onClick={handleOpen}
       >
-        Nuevo Actor
+        {typeButton.name}
       </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -150,7 +161,7 @@ export function ModalNewActor() {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <Title>Nuevo Actor</Title>
+            <Title>{title}</Title>
             <form
               className={classes.root}
               onSubmit={handleSubmit}
@@ -164,6 +175,7 @@ export function ModalNewActor() {
                 variant="outlined"
                 fullWidth
                 name="names"
+                defaultValue={form.names}
                 onChange={handleChange}
               />
               <TextField
@@ -174,6 +186,7 @@ export function ModalNewActor() {
                 variant="outlined"
                 fullWidth
                 name="age"
+                defaultValue={form.age}
                 onChange={handleChange}
                 InputLabelProps={{
                   shrink: true,

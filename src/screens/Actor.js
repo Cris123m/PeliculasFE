@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,13 +9,10 @@ import Title from '../Title';
 import { Avatar } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import { getMovies } from '../api/movies';
 import { getActors } from '../api/actors';
-import { getGenres } from '../api/genres';
 import { map } from 'lodash';
-import { ModalMovie } from '../components/ModalMovie';
 import { ModalNewActor } from '../components/ModalNewActor';
-import { ModalVerInfo } from '../components/ModalVerInfo';
+import firebase from '../utils/firebase';
 
 function preventDefault(event) {
   event.preventDefault();
@@ -33,29 +29,14 @@ export default function Actors(props) {
 
   const { route } = props;
   //const {id} = route.params;
-  const [movies, setMovies] = useState(null);
   const [actors, setActors] = useState([]);
-  const [genres, setGenres] = useState([]);
-
-  useEffect(() => {
-    getMovies().then((response) => {
-      console.log(response);
-      setMovies(response);
-    });
-  }, []);
 
   useEffect(() => {
     getActors().then((response) => {
       setActors(response);
     });
-  }, []);
-
-  useEffect(() => {
-    getGenres().then((response) => {
-      setGenres(response);
-    });
-  }, []);
-  if (!movies) return null;
+  }, [actors]);
+  if (!actors) return null;
   return (
     <React.Fragment>
       <Container maxWidth="lg" className={classes.container}>
@@ -64,7 +45,7 @@ export default function Actors(props) {
             <Title>Lista de actores</Title>
           </Grid>
           <Grid item xs={12} md={4} lg={3}>
-            <ModalNewActor />
+            <ModalNewActor firebase={firebase} type="create" actor={[]} />
           </Grid>
         </Grid>
       </Container>
@@ -97,8 +78,7 @@ function ActorRow(props) {
       <TableCell>{actor.names}</TableCell>
       <TableCell>{actor.age}</TableCell>
       <TableCell align="center">
-        {/* <ModalVerInfo movie={movie} />
-        <ModalMovie movie={movie} actors={actors} genres={genres} /> */}
+        <ModalNewActor firebase={firebase} type="edit" actor={actor} />
       </TableCell>
     </TableRow>
   );
