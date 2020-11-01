@@ -18,11 +18,32 @@ import {
 import Title from '../Title';
 import FileUpload from './FileUpload';
 import { map } from 'lodash';
+import firebase from 'firebase/app';
+import 'firebase/storage';
+import { createActor } from '../api/actors';
+
+firebase.initializeApp({
+  apiKey: 'AIzaSyDmtraQk6rXhD6_yoWbuCgPNg_ruCRaWc0',
+  authDomain: 'peliculas-294019.firebaseapp.com',
+  databaseURL: 'https://peliculas-294019.firebaseio.com',
+  projectId: 'peliculas-294019',
+  storageBucket: 'peliculas-294019.appspot.com',
+  messagingSenderId: '617239861404',
+  appId: '1:617239861404:web:51bfc0f548e4a239cbf559',
+});
 
 export function ModalNewActor() {
   const classes = useStyles();
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [names, setNames] = useState({});
+  const [age, setAge] = useState({});
+  const [photoUrl, setPhotoUrl] = useState({});
+  const [percentage, setPercentage] = useState({});
+  const [photoURL, setPhotoURL] = useState({});
+  const [form, setForm] = useState({
+    uploadValue: 0,
+  });
 
   const handleOpen = () => {
     setOpen(true);
@@ -30,6 +51,79 @@ export function ModalNewActor() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handlePictureChange = (event) => {
+    const file = event.target.files[0];
+    const storageRef = firebase.storage().ref(`pictures/${file.name}`);
+    const task = storageRef.put(file);
+
+    task.on(
+      'state_changed',
+      (snapshot) => {
+        let percentage =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setForm({
+          uploadValue: percentage,
+        });
+        setPercentage({
+          percentage,
+        });
+      },
+      (error) => {
+        console.error(error.message);
+      },
+      () => {
+        firebase
+          .storage()
+          .ref('pictures')
+          .child(file.name)
+          .getDownloadURL()
+          .then((url) => {
+            setForm({
+              photoURL: url,
+              uploadValue: 100,
+              names: names,
+              age: age,
+            });
+          });
+      },
+    );
+  };
+
+  const handleChange = (e) => {
+    console.log(`${e.target.name}: ${e.target.value}`);
+    if (e.target.name === 'names') {
+      setNames(e.target.value);
+    }
+    if (e.target.name === 'age') {
+      setAge(e.target.value);
+    }
+    setForm({
+      photoURL: form.photoURL,
+      uploadValue: form.uploadValue,
+      names: names,
+      age: age,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    createActor(form);
+    /* try {
+      let config = {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      };
+      let res = await fetch('', config);
+      let json = await res.json();
+      console.log(json);
+    } catch (error) {} */
   };
 
   return (
@@ -57,13 +151,20 @@ export function ModalNewActor() {
         <Fade in={open}>
           <div className={classes.paper}>
             <Title>Nuevo Actor</Title>
-            <form className={classes.root} noValidate autoComplete="off">
+            <form
+              className={classes.root}
+              onSubmit={handleSubmit}
+              noValidate
+              autoComplete="off"
+            >
               <TextField
                 required
                 id="standard-required"
                 label="Nombre"
                 variant="outlined"
                 fullWidth
+                name="names"
+                onChange={handleChange}
               />
               <TextField
                 required
@@ -72,11 +173,13 @@ export function ModalNewActor() {
                 type="number"
                 variant="outlined"
                 fullWidth
+                name="age"
+                onChange={handleChange}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
-              <FileUpload />
+              <FileUpload onChange={handlePictureChange} form={form} />
             </form>
             <Container maxWidth="lg" className={classes.container}>
               <Grid container alignItems="right" spacing={2}>
@@ -90,7 +193,11 @@ export function ModalNewActor() {
                   </Button>
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
-                  <Button variant="contained" color="primary">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                  >
                     Guardar
                   </Button>
                 </Grid>
