@@ -11,12 +11,8 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { getActors } from '../api/actors';
 import { map } from 'lodash';
-import { ModalNewActor } from '../components/ModalNewActor';
+import { ModalActor } from '../components/ModalActor';
 import firebase from '../utils/firebase';
-
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -24,11 +20,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Actors(props) {
+export default function Actors() {
   const classes = useStyles();
-
-  const { route } = props;
-  //const {id} = route.params;
   const [actors, setActors] = useState([]);
 
   useEffect(() => {
@@ -45,7 +38,7 @@ export default function Actors(props) {
             <Title>Lista de actores</Title>
           </Grid>
           <Grid item xs={12} md={4} lg={3}>
-            <ModalNewActor firebase={firebase} type="create" actor={[]} />
+            <ModalActor firebase={firebase} type="create" actor={[]} />
           </Grid>
         </Grid>
       </Container>
@@ -78,7 +71,7 @@ function ActorRow(props) {
       <TableCell>{actor.names}</TableCell>
       <TableCell>{actor.age}</TableCell>
       <TableCell align="center">
-        <ModalNewActor firebase={firebase} type="edit" actor={actor} />
+        <ModalActor firebase={firebase} type="edit" actor={actor} />
       </TableCell>
     </TableRow>
   );

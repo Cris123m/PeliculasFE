@@ -15,7 +15,7 @@ class FileUpload extends Component {
           style={{ width: '100%' }}
         />
         <br />
-        <img width="90" src={form.photoURL} />
+        <img width="90" alt="" src={form.photoURL} />
       </div>
     );
   }

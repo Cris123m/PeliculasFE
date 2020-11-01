@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import { ModalMessage } from '../components/ModalMessage';
 import {
   FormControl,
   TextField,
@@ -17,17 +18,15 @@ import {
 } from '@material-ui/core';
 import Title from '../Title';
 import { map } from 'lodash';
+import { createMovie, editMovie } from '../api/movies';
 
-function actorSelected(props) {
-  const { movie, actors } = props;
+function actorSelected(movie, actors) {
   var actorSel = [];
   if (movie) {
     actors.forEach((actor) => {
       movie.actors.forEach((act) => {
         if (actor.id === act.id) {
           actorSel.push(actor);
-          console.log('ActorSel');
-          console.log(actorSel);
         }
       });
     });
@@ -36,15 +35,52 @@ function actorSelected(props) {
 }
 
 export function ModalMovie(props) {
-  const { movie, actors, genres } = props;
+  const { movie, actors, genres, type } = props;
   const classes = useStyles();
   const theme = useTheme();
 
+  const [title, setTitle] = useState('');
+  const [typeButton, setTypeButton] = useState({});
   const [open, setOpen] = React.useState(false);
-  const [personName, setPersonName] = useState(actorSelected(props));
+  const [openM, setOpenM] = React.useState(false);
+  const [message, setMessage] = useState('');
   const [stateGenre, setStateGenre] = useState({
     genre: movie.genre.id,
   });
+  const [idMovie, setIdMovie] = useState('');
+  const [form, setForm] = useState({
+    name: '',
+    duration: '',
+    genre: '',
+    synopsis: '',
+    actors: [],
+  });
+
+  useEffect(() => {
+    if (type === 'create') {
+      setTitle('Nueva Pelicula');
+      setTypeButton({
+        name: 'Nueva Película',
+        variant: 'contained',
+        color: 'primary',
+      });
+    } else if (type === 'edit') {
+      setTitle('Editar Pelicula');
+      setTypeButton({
+        name: 'Editar',
+        variant: 'outlined',
+        color: 'secondary',
+      });
+      setIdMovie(movie.id);
+      setForm({
+        name: movie.name,
+        duration: movie.duration,
+        genre: movie.genre,
+        synopsis: movie.synopsis,
+        actors: actorSelected(movie, actors),
+      });
+    }
+  }, [type]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -54,8 +90,56 @@ export function ModalMovie(props) {
     setOpen(false);
   };
 
+  const handleOpenM = () => {
+    setOpenM(true);
+  };
+
+  const handleCloseM = () => {
+    setOpenM(false);
+  };
+
   const handleChange = (event) => {
-    setPersonName(event.target.value);
+    switch (event.target.name) {
+      case 'actors':
+        setForm({
+          name: form.name,
+          duration: form.duration,
+          genre: form.genre,
+          synopsis: form.synopsis,
+          actors: event.target.value,
+        });
+        break;
+      case 'name':
+        setForm({
+          name: event.target.value,
+          duration: form.duration,
+          genre: form.genre,
+          synopsis: form.synopsis,
+          actors: form.actors,
+        });
+        break;
+      case 'duration':
+        setForm({
+          name: form.name,
+          duration: event.target.value,
+          genre: form.genre,
+          synopsis: form.synopsis,
+          actors: form.actors,
+        });
+        break;
+      case 'synopsis':
+        setForm({
+          name: form.name,
+          duration: form.duration,
+          genre: form.genre,
+          synopsis: event.target.value,
+          actors: form.actors,
+        });
+        break;
+
+      default:
+        break;
+    }
   };
 
   const handleChangeGenre = (event) => {
@@ -64,12 +148,53 @@ export function ModalMovie(props) {
       ...stateGenre,
       [name]: event.target.value,
     });
+    setForm({
+      name: form.name,
+      duration: form.duration,
+      genre: { id: event.target.value },
+      synopsis: form.synopsis,
+      actors: form.actors,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (type === 'create') {
+      if (createMovie(form)) {
+        setMessage('La película se ha creado correctamente');
+        handleOpenM();
+        handleClose();
+      } else {
+        setMessage('Ocurrió un error al intentar crear');
+        handleOpenM();
+      }
+    } else if (type === 'edit') {
+      if (editMovie(idMovie, form)) {
+        setMessage('La película se ha editado correctamente');
+        handleOpenM();
+        handleClose();
+      } else {
+        setMessage('Ocurrió un error al intentar editar');
+        handleOpenM();
+      }
+    }
   };
 
   return (
     <>
-      <Button type="button" color="secondary" onClick={handleOpen}>
-        Editar
+      <ModalMessage
+        title={title}
+        message={message}
+        open={openM}
+        handleClose={handleCloseM}
+      />
+      <Button
+        type="button"
+        variant={typeButton.variant}
+        color={typeButton.color}
+        onClick={handleOpen}
+      >
+        {typeButton.name}
       </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -85,13 +210,15 @@ export function ModalMovie(props) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <Title>Editar Película</Title>
+            <Title>{title}</Title>
             <form className={classes.root} noValidate autoComplete="off">
               <TextField
                 required
                 id="standard-required"
                 label="Nombre"
-                defaultValue={movie.name}
+                name="name"
+                defaultValue={form.name}
+                onChange={handleChange}
                 variant="outlined"
                 fullWidth
               />
@@ -99,7 +226,9 @@ export function ModalMovie(props) {
                 id="standard-number"
                 label="Duración (minutos)"
                 type="number"
-                defaultValue={movie.duration}
+                name="duration"
+                defaultValue={form.duration}
+                onChange={handleChange}
                 variant="outlined"
                 fullWidth
                 InputLabelProps={{
@@ -135,7 +264,9 @@ export function ModalMovie(props) {
                 label="Sinopsis"
                 multiline
                 rows={4}
+                name="synopsis"
                 defaultValue={movie.synopsis}
+                onChange={handleChange}
                 variant="outlined"
                 fullWidth
               />
@@ -149,7 +280,8 @@ export function ModalMovie(props) {
                   labelId="demo-mutiple-chip-label"
                   id="demo-mutiple-chip"
                   multiple
-                  value={personName}
+                  name="actors"
+                  value={form.actors}
                   onChange={handleChange}
                   fullWidth
                   defaultValue={actors[2]}
@@ -171,7 +303,7 @@ export function ModalMovie(props) {
                     <MenuItem
                       key={actor.id}
                       value={actor}
-                      style={getStyles(actor, personName, theme)}
+                      style={getStyles(actor, form.actors, theme)}
                     >
                       {actor.names}
                     </MenuItem>
@@ -191,7 +323,11 @@ export function ModalMovie(props) {
                   </Button>
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
-                  <Button variant="contained" color="primary">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                  >
                     Guardar
                   </Button>
                 </Grid>

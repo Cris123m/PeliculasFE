@@ -3,34 +3,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
-import {
-  Button,
-  Container,
-  Grid,
-  FormLabel,
-  Typography,
-} from '@material-ui/core';
-import Title, { Subtitle } from '../Title';
+import { Button, Container, Grid, Typography } from '@material-ui/core';
+import Title from '../Title';
 
-export function ModalVerInfo(props) {
-  const { movie } = props;
+export function ModalMessage(props) {
+  const { title, message, open, handleClose } = props;
   const classes = useStyles();
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   return (
     <>
-      <Button type="button" color="primary" onClick={handleOpen}>
-        Ver Info
-      </Button>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -45,30 +26,14 @@ export function ModalVerInfo(props) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <div className={classes.root}>
-              <Title>{movie.name}</Title>
-              <FormLabel>{movie.duration} minutos</FormLabel>
-              <Subtitle>Sinopsis</Subtitle>
-              <Typography variant="body2" component="p">
-                {movie.synopsis}
-              </Typography>
-              <Subtitle>Actores</Subtitle>
-              {movie.actors.map((actor) => (
-                <Container maxWidth="lg">
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} md={6} lg={6}>
-                      {actor.names}
-                    </Grid>
-                    <Grid item xs={6} md={6} lg={6}>
-                      {actor.age}
-                    </Grid>
-                  </Grid>
-                </Container>
-              ))}
-            </div>
+            <Title>{title}</Title>
+            <Typography variant="body2" component="p">
+              {message}
+            </Typography>
             <Container maxWidth="lg" className={classes.container}>
-              <Grid container alignContent="right" spacing={1}>
-                <Grid className={classes.buttons} item xs={12} md={12} lg={12}>
+              <Grid container alignItems="right" spacing={2}>
+                <Grid item xs={12} md={6} lg={6}></Grid>
+                <Grid item xs={12} md={6} lg={6}>
                   <Button
                     variant="contained"
                     color="secondary"
@@ -101,7 +66,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     '& .MuiTextField-root': {
       margin: theme.spacing(1, 0),
-      //width: '35ch',
       display: 'block',
     },
     margin: theme.spacing(0),
@@ -117,12 +81,5 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     margin: 10,
-  },
-  subtitle: {
-    fontSize: '10px',
-    color: '#000',
-  },
-  buttons: {
-    alignContent: 'right',
   },
 }));

@@ -25,8 +25,9 @@ export async function createActor(form) {
     };
     let res = await fetch(url, config);
     let json = await res.json();
-    console.log(json);
-    created = true;
+    if (json === form) {
+      created = true;
+    }
   } catch (error) {}
 
   return created;
@@ -46,8 +47,9 @@ export async function editActor(idActor, form) {
     };
     let res = await fetch(url, config);
     let json = await res.json();
-    console.log(json);
-    created = true;
+    if (json === form) {
+      created = true;
+    }
   } catch (error) {}
 
   return created;

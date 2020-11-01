@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,7 +6,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from '../Title';
-import { Button } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { getMovies } from '../api/movies';
@@ -15,12 +13,7 @@ import { getActors } from '../api/actors';
 import { getGenres } from '../api/genres';
 import { map } from 'lodash';
 import { ModalMovie } from '../components/ModalMovie';
-import { ModalNewMovie } from '../components/ModalNewMovie';
 import { ModalVerInfo } from '../components/ModalVerInfo';
-
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -28,21 +21,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Movies(props) {
+export default function Movies() {
   const classes = useStyles();
-
-  const { route } = props;
-  //const {id} = route.params;
   const [movies, setMovies] = useState(null);
-  const [actors, setActors] = useState([]);
+  const [actors, setActors] = useState(null);
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
     getMovies().then((response) => {
-      console.log(response);
+      //console.log(response);
       setMovies(response);
     });
-  }, []);
+  }, [movies]);
 
   useEffect(() => {
     getActors().then((response) => {
@@ -56,6 +46,7 @@ export default function Movies(props) {
     });
   }, []);
   if (!movies) return null;
+  if (!actors) return null;
   return (
     <React.Fragment>
       <Container maxWidth="lg" className={classes.container}>
@@ -64,7 +55,12 @@ export default function Movies(props) {
             <Title>Lista de películas</Title>
           </Grid>
           <Grid item xs={12} md={4} lg={3}>
-            <ModalNewMovie genres={genres} actors={actors} />
+            <ModalMovie
+              movie={{ genre: { id: 1 } }}
+              actors={actors}
+              genres={genres}
+              type="create"
+            />
           </Grid>
         </Grid>
       </Container>
@@ -96,7 +92,7 @@ function MovieRow(props) {
       <TableCell key={movie.genre.id}>{movie.genre.nameGenre}</TableCell>
       <TableCell align="center">
         <ModalVerInfo movie={movie} />
-        <ModalMovie movie={movie} actors={actors} genres={genres} />
+        <ModalMovie movie={movie} actors={actors} genres={genres} type="edit" />
       </TableCell>
     </TableRow>
   );
