@@ -1,3 +1,25 @@
+# Frontend de proyecto de prueba de Películas </br>
+Autor: Cristofer Machado Email: cristofer123m@hotmail.com</br>
+## Requisitos
+- NodeJs
+- npm
+- Backend del proyecto previamente puesta en uso: https://github.com/Cris123m/PeliculasBE
+## Instrucciones 
+- Clonar o descargar el proyecto desde Github.
+- En el terminal, ubicarse en la carpeta del proyecto.
+- Utilizar el siguiente comando para instalar las dependencias:
+```bash
+$ npm install
+```
+- Una vez instalado, correr el frontend con este comando:
+```bash
+$ npm start
+```
+## Nota:
+- Por defecto consume el backend por el puerto 5000 por medio de http://localhost:5000/api.
+- En el caso de requerirlo se puede cambiar la ruta por el archivo ubicado en: /src/utils/constants.js 
+- En el caso de que no se haya abierto automáticamente la página, en la URL se dirige a: http://localhost:3000
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
