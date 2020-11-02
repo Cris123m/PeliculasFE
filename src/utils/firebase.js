@@ -12,3 +12,4 @@ firebase.initializeApp({
 });
 
 export default firebase;
+//Datos para consumir la API de Firebase y el Cloud incluido de Google

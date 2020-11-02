@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+//Componente para la carga de imágenes
 class FileUpload extends Component {
   render() {
     const { onChange, form } = this.props;

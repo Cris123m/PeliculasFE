@@ -1,5 +1,7 @@
 import { API_HOST } from '../utils/constants';
 
+//Comunicación para consumir los diferentes servicios de la API
+//CRUD Actors
 export function getActors() {
   const url = `${API_HOST}/actors`;
   return fetch(url)

@@ -5,7 +5,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Title from '../Title';
+import Title from '../components/Title';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { getMovies } from '../api/movies';
@@ -15,18 +15,21 @@ import { map } from 'lodash';
 import { ModalMovie } from '../components/ModalMovie';
 import { ModalVerInfo } from '../components/ModalVerInfo';
 
+//EStilos a ser usados dentro del componente
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
   },
 }));
 
+//Función principal a ser usado para mostrar el listado de Películas
 export default function Movies() {
   const classes = useStyles();
-  const [movies, setMovies] = useState(null);
-  const [actors, setActors] = useState(null);
-  const [genres, setGenres] = useState([]);
+  const [movies, setMovies] = useState(null); //Recibe el listado de peliculas
+  const [actors, setActors] = useState(null); //Recibe el lsitado de actores
+  const [genres, setGenres] = useState([]); //Recibe el listado de géneros
 
+  //Recibe desde la API el listado de películas
   useEffect(() => {
     getMovies().then((response) => {
       //console.log(response);
@@ -34,19 +37,21 @@ export default function Movies() {
     });
   }, [movies]);
 
+  //Recibe desde la API el listado de actores
   useEffect(() => {
     getActors().then((response) => {
       setActors(response);
     });
   }, []);
 
+  //Recibe desde la API el listado de géneros
   useEffect(() => {
     getGenres().then((response) => {
       setGenres(response);
     });
   }, []);
-  if (!movies) return null;
-  if (!actors) return null;
+  if (!movies) return null; //Si no hay peliculas no retorna nada
+  if (!actors) return null; //Si no hay actores no retorna nada
   return (
     <React.Fragment>
       <Container maxWidth="lg" className={classes.container}>
@@ -83,6 +88,7 @@ export default function Movies() {
   );
 }
 
+//Datos a ser mostrado para cada una de las filas de películas
 function MovieRow(props) {
   const { movie, actors, genres } = props;
   return (

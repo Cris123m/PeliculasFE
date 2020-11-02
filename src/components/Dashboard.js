@@ -14,10 +14,11 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { mainListItems } from '../listItems';
+import { mainListItems } from './listItems';
 import Movies from '../screens/Movie';
 import Actors from '../screens/Actor';
 
+//Dashboard de la web usada en cada página
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({

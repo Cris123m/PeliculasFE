@@ -10,18 +10,21 @@ import {
   FormLabel,
   Typography,
 } from '@material-ui/core';
-import Title, { Subtitle } from '../Title';
+import Title, { Subtitle } from './Title';
 
+//Modal que muestra los datos de cada uno de las películas
 export function ModalVerInfo(props) {
-  const { movie } = props;
-  const classes = useStyles();
+  const { movie } = props; //Recibe la película al ser mostrado los datos
+  const classes = useStyles(); //Recibe los estilos a ser usados
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false); //Constante para el control de Modal
 
+  //Control para abrir el modal actual
   const handleOpen = () => {
     setOpen(true);
   };
 
+  //Control para cerrar el modal actual
   const handleClose = () => {
     setOpen(false);
   };
@@ -86,6 +89,7 @@ export function ModalVerInfo(props) {
   );
 }
 
+//Estilos para ser usados en modal
 const useStyles = makeStyles((theme) => ({
   modal: {
     display: 'flex',
@@ -101,7 +105,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     '& .MuiTextField-root': {
       margin: theme.spacing(1, 0),
-      //width: '35ch',
       display: 'block',
     },
     margin: theme.spacing(0),

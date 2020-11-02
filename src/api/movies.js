@@ -1,5 +1,7 @@
 import { API_HOST } from '../utils/constants';
 
+//Comunicación para consumir los diferentes servicios de la API
+//CRUD Películas
 export function getMovies() {
   const url = `${API_HOST}/movies`;
   return fetch(url)

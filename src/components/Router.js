@@ -4,6 +4,7 @@ import MoviesPage from '../pages/movies';
 import ActorPage from '../pages/actors';
 import NotFound from '../pages/NotFound';
 
+//Control de rutas de la web
 export default function Router() {
   return (
     <BrowserRouter>

@@ -4,8 +4,12 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import { Button, Container, Grid, Typography } from '@material-ui/core';
-import Title from '../Title';
+import Title from './Title';
 
+//Modal para mostrar un mensaje determinado con controles
+//para ser usado desde un componente superior
+//Se debe enviar en los props el título, mensaje, el atributo de abierto/cerrado en true o false,
+//y la función de cerrado para usar en el botón Cerrar
 export function ModalMessage(props) {
   const { title, message, open, handleClose } = props;
   const classes = useStyles();
@@ -51,6 +55,7 @@ export function ModalMessage(props) {
   );
 }
 
+//Estilos para cada elemento del modal
 const useStyles = makeStyles((theme) => ({
   modal: {
     display: 'flex',

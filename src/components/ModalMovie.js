@@ -16,10 +16,18 @@ import {
   Container,
   Grid,
 } from '@material-ui/core';
-import Title from '../Title';
+import Title from './Title';
 import { map } from 'lodash';
 import { createMovie, editMovie } from '../api/movies';
 
+//Modal para la crear/actualizar una pélicula
+//Como atributos en los props debe recibir
+//movie: con los datos de la pélicula de ser editado
+//actors: recibe la clase con el listado de actores
+//genres: recibe la clase con el listado de géneros
+//type: recibe si el modal es para crear(create) o editar (edit)
+
+//Función para igualar el objeto de actores para cada una de las películas
 function actorSelected(movie, actors) {
   var actorSel = [];
   if (movie) {
@@ -39,16 +47,19 @@ export function ModalMovie(props) {
   const classes = useStyles();
   const theme = useTheme();
 
-  const [title, setTitle] = useState('');
-  const [typeButton, setTypeButton] = useState({});
-  const [open, setOpen] = React.useState(false);
-  const [openM, setOpenM] = React.useState(false);
-  const [message, setMessage] = useState('');
+  //Constantes para ser usadas en cada acción
+  const [title, setTitle] = useState(''); //Titulo del modal
+  const [typeButton, setTypeButton] = useState({}); //Tipo de botón crear/editar
+  const [open, setOpen] = React.useState(false); //Control del modal abierto/cerrado
+  const [openM, setOpenM] = React.useState(false); //Control del modal de mensaje abierto/cerrado
+  const [message, setMessage] = useState(''); //Mensaje a ser enviado al modal Message
   const [stateGenre, setStateGenre] = useState({
+    //Datos recibido dentro del select género
     genre: movie.genre.id,
   });
-  const [idMovie, setIdMovie] = useState('');
+  const [idMovie, setIdMovie] = useState(''); //Id de la película a ser editada
   const [form, setForm] = useState({
+    //Datos a ser enviados a la API
     name: '',
     duration: '',
     genre: '',
@@ -56,6 +67,7 @@ export function ModalMovie(props) {
     actors: [],
   });
 
+  //Datos a ser expuestos al crear/editar actor
   useEffect(() => {
     if (type === 'create') {
       setTitle('Nueva Pelicula');
@@ -82,22 +94,27 @@ export function ModalMovie(props) {
     }
   }, [type]);
 
+  //Control para abrir el modal actual
   const handleOpen = () => {
     setOpen(true);
   };
 
+  //Control para cerrar el modal actual
   const handleClose = () => {
     setOpen(false);
   };
 
+  //Control para abrir el modal de mensaje
   const handleOpenM = () => {
     setOpenM(true);
   };
 
+  //Control para cerrar el modal de mensaje
   const handleCloseM = () => {
     setOpenM(false);
   };
 
+  //Control de cambios en cada entrada, excepto género
   const handleChange = (event) => {
     switch (event.target.name) {
       case 'actors':
@@ -142,6 +159,7 @@ export function ModalMovie(props) {
     }
   };
 
+  //Control de cambios para cada género
   const handleChangeGenre = (event) => {
     const name = event.target.name;
     setStateGenre({
@@ -157,6 +175,7 @@ export function ModalMovie(props) {
     });
   };
 
+  //Acción en el caso de realizar el guardado de actor
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (type === 'create') {

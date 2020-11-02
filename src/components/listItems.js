@@ -6,6 +6,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import { Movie, RecentActors } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
 
+//Items utilizados dentro del Dashboard
 export const mainListItems = (
   <div>
     <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
